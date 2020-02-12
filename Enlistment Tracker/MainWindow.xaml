@@ -1,0 +1,58 @@
+﻿<Window x:Class="Enlistment_Tracker.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Enlistment_Tracker"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Window.Resources>
+        <local:ColorConverter x:Key="ColorConverter"></local:ColorConverter>
+        <DataTemplate DataType="{x:Type local:Enlistment}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <TextBox FontSize="24 pt" Grid.Column="0" Padding="10" TextAlignment="Center" Text="{Binding Name}" Background="#222222" Foreground="AntiqueWhite"></TextBox>
+                <TextBox FontSize="24 pt" Grid.Column="1"  Padding="10" TextAlignment="Center" Text="{Binding Branch}" Background="#222222" Foreground="AntiqueWhite"></TextBox>
+                <Button Grid.Column="2" Padding="10" Name="button" Background="{Binding State, Converter={StaticResource ColorConverter}}" Click="ListButtonClick">
+                    <TextBlock FontSize="24 pt" Foreground="White" Text="{Binding State}"></TextBlock>
+                </Button>
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="DarkSlateGray">
+        <ListView ItemsSource="{Binding}" HorizontalAlignment="Stretch" Background="#222222">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="Margin" Value="-4" />
+                </Style>
+            </ListView.ItemContainerStyle>
+        </ListView>
+        <!--<ListView HorizontalAlignment="Stretch">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="Margin" Value="-4" />
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListViewItem>
+                <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="3*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <TextBox Grid.Column="0" Padding="10" TextAlignment="Center" Text="wef" Background="#222222" Foreground="AntiqueWhite"></TextBox>
+                <TextBox Grid.Column="1"  Padding="10" TextAlignment="Center" Text="wefw" Background="#222222" Foreground="AntiqueWhite"></TextBox>
+                <Button Grid.Column="2" Padding="10" Background="DodgerBlue" Click="ListButtonClick">
+                    <TextBlock Foreground="White" Text="wef"></TextBlock>
+                </Button>
+            </Grid>
+            </ListViewItem>
+        </ListView>-->
+    </Grid>
+</Window>
