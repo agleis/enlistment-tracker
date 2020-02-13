@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.IO.IsolatedStorage;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LibGit2Sharp;
 
 namespace Enlistment_Tracker
 {
@@ -21,23 +25,70 @@ namespace Enlistment_Tracker
     /// </summary>
     public partial class MainWindow : Window
     {
-        List<Enlistment> enlistments = new List<Enlistment>()
+        private static readonly HashSet<string> directorySkipList = new HashSet<string>()
         {
-            new Enlistment("Adams", "", State.Done),
-            new Enlistment("Baker", "", State.Done),
-            new Enlistment("Glacier", "", State.Done),
-            new Enlistment("Hood", "", State.Done),
-            new Enlistment("Jefferson", "", State.Done),
-            new Enlistment("Lassen", "", State.Done),
-            new Enlistment("Rainier", "", State.Done),
-            new Enlistment("Shasta", "", State.Done),
-            new Enlistment("St. Helens", "", State.Done),
+            "$RECYCLE.BIN",
+            "Actual Shub VM",
+            "blueboard",
+            "Enlistment Tracker",
+            "NP",
+            "services-tools",
+            "Shub shub shub",
+            "Shub VM",
+            "St. Helens Utilities",
+            "System Volume Information",
+            "Terminal",
+            "vscode",
+            "Watson-Tool",
+            "watson-tool-clean",
+            "wiki"
         };
+
+        Dictionary<string, object> states = new Dictionary<string, object>();
 
         public MainWindow()
         {
+            BinaryFormatter formatter = new BinaryFormatter();
+            var store = IsolatedStorageFile.GetUserStoreForAssembly();
+
+            using (var stream = store.OpenFile("settings.cfg", FileMode.OpenOrCreate, FileAccess.Read))
+            {
+                states = (Dictionary<string, object>)formatter.Deserialize(stream);
+            }
+            var enlistments = new List<Enlistment>();
+            var directories = Directory.GetDirectories("D:\\");
+            foreach (var directory in directories)
+            {
+                var directoryStripped = DirectoryStripped(directory);
+                if (directorySkipList.Contains(directoryStripped))
+                    continue;
+
+                using (var repo = new Repository(directory))
+                {
+                    var checkedOutBranch = repo.Head;
+                    var branchStripped = BranchStripped(checkedOutBranch.FriendlyName);
+                    var state = states.ContainsKey(directoryStripped) ? (State)states[directoryStripped] : State.Done;
+                    enlistments.Add(new Enlistment(directoryStripped, branchStripped, state));
+                }
+            }
             InitializeComponent();
             DataContext = enlistments;
+        }
+
+        private string DirectoryStripped(string directory)
+        {
+            if (directory.StartsWith("D:\\"))
+                return directory.Remove(0, 3);
+
+            return directory;
+        }
+
+        private string BranchStripped(string branch)
+        {
+            if (branch.StartsWith("adgleisn/"))
+                return branch.Remove(0, 9);
+
+            return branch;
         }
 
         private void ListButtonClick(object sender, RoutedEventArgs e)
@@ -52,21 +103,27 @@ namespace Enlistment_Tracker
 
             if (context.State == State.Done)
             {
+                states[context.Name] = State.WIP;
                 context.State = State.WIP;
-                button.Background = Brushes.Firebrick;
-                (button.Content as TextBlock).Text = "WIP";
             }
             else if (context.State == State.WIP)
             {
+                states[context.Name] = State.InPR;
                 context.State = State.InPR;
-                button.Background = Brushes.ForestGreen;
-                (button.Content as TextBlock).Text = "In PR";
             }
             else if (context.State == State.InPR)
             {
+                states[context.Name] = State.Done;
                 context.State = State.Done;
-                button.Background = Brushes.DodgerBlue;
-                (button.Content as TextBlock).Text = "Done";
+            }
+
+            BinaryFormatter formatter = new BinaryFormatter();
+            var store = IsolatedStorageFile.GetUserStoreForAssembly();
+
+            // Save
+            using (var stream = store.OpenFile("settings.cfg", FileMode.OpenOrCreate, FileAccess.Write))
+            {
+                formatter.Serialize(stream, states);
             }
         }
     }
@@ -89,7 +146,7 @@ namespace Enlistment_Tracker
             switch(state.Value)
             {
                 case State.Done:
-                    return Brushes.AliceBlue;
+                    return Brushes.DodgerBlue;
                 case State.InPR:
                     return Brushes.ForestGreen;
                 case State.WIP:
@@ -105,7 +162,7 @@ namespace Enlistment_Tracker
             if (brush == null)
                 return Binding.DoNothing;
 
-            if (brush == Brushes.AliceBlue)
+            if (brush == Brushes.DodgerBlue)
                 return State.Done;
             if (brush == Brushes.ForestGreen)
                 return State.InPR;
