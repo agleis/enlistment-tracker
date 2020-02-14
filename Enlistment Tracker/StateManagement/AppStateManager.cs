@@ -8,16 +8,22 @@ namespace Enlistment_Tracker.StateManagement
 {
     class AppStateManager : StateManager
     {
-        public static bool IsWelcomed
+        public static AppState AppState
         {
-            get => GetState<bool>("isWelcomed");
-            set => SetState("isWelcomed", value);
+            get => GetState<AppState>("appState");
+            set => SetState("appState", value);
         }
 
         public static string RootDirectory
         {
             get => GetState<string>("rootDirectory");
             set => SetState("rootDirectory", value);
+        }
+
+        public static List<string> DirectoryIncludeList
+        {
+            get => GetState<List<string>>("directoryIncludeList");
+            set => SetState("directoryIncludeList", value);
         }
     }
 }

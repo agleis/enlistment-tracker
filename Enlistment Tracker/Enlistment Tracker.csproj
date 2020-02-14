@@ -62,14 +62,25 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\IsIncludedToColorConverter.cs" />
+    <Compile Include="DirectoryPage.xaml.cs">
+      <DependentUpon>DirectoryPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DirectoryPageData.cs" />
+    <Compile Include="DirectoryStripper.cs" />
     <Compile Include="EnlistmentsPage.xaml.cs">
       <DependentUpon>EnlistmentsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EnlistmentsPageData.cs" />
     <Compile Include="StateManagement\AppStateManager.cs" />
     <Compile Include="StateManagement\RepoStateManager.cs" />
     <Compile Include="WelcomePage.xaml.cs">
       <DependentUpon>WelcomePage.xaml</DependentUpon>
     </Compile>
+    <Page Include="DirectoryPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

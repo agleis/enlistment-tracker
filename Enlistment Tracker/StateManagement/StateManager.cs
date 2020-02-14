@@ -45,7 +45,7 @@ namespace Enlistment_Tracker.StateManagement
             {
                 return (T)value;
             }
-            catch (InvalidCastException)
+            catch (Exception e) when (e is InvalidCastException || e is NullReferenceException)
             {
                 return default(T);
             }

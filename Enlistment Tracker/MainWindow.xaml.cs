@@ -32,11 +32,33 @@ namespace Enlistment_Tracker
         {
             StateManager.Initialize();
             InitializeComponent();
+            AppStateManager.AppState = AppState.Welcomed;
             Page page;
-            if (AppStateManager.IsWelcomed)
-                page = new EnlistmentsPage(AppStateManager.RootDirectory);
-            else
-                page = new WelcomePage();
+            switch (AppStateManager.AppState)
+            {
+                case AppState.Welcomed:
+                    var directoryData = new DirectoryPageData()
+                    {
+                        Directory = AppStateManager.RootDirectory
+                    };
+                    page = new DirectoryPage(directoryData);
+                    break;
+                case AppState.Directed:
+                    var enlistmentsData = new EnlistmentsPageData()
+                    {
+                        Directory = AppStateManager.RootDirectory,
+                        DirectoryIncludeList = AppStateManager.DirectoryIncludeList
+                    };
+                    page = new EnlistmentsPage(enlistmentsData);
+                    break;
+                case AppState.BrandNew:
+                    page = new WelcomePage();
+                    break;
+                default:
+                    AppStateManager.AppState = AppState.BrandNew;
+                    page = new WelcomePage();
+                    break;
+            }
             mainFrame.Navigate(page);
         }
     }
@@ -46,6 +68,13 @@ namespace Enlistment_Tracker
         WIP,
         InPR,
         Done
+    }
+
+    public enum AppState
+    {
+        BrandNew,
+        Welcomed,
+        Directed
     }
 
     public class Enlistment : INotifyPropertyChanged
@@ -101,10 +130,7 @@ namespace Enlistment_Tracker
 
         protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

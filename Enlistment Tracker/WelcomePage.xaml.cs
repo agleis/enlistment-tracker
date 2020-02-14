@@ -47,9 +47,12 @@ namespace Enlistment_Tracker.StateManagement
 
         private void WelcomeConfirm(object sender, RoutedEventArgs e)
         {
-            AppStateManager.IsWelcomed = true;
             AppStateManager.RootDirectory = FileName.Text;
-            this.NavigationService.Navigate(new EnlistmentsPage(FileName.Text));
+            var data = new DirectoryPageData()
+            {
+                Directory = FileName.Text
+            };
+            this.NavigationService.Navigate(new DirectoryPage(data));
         }
     }
 }

@@ -22,33 +22,15 @@ namespace Enlistment_Tracker.StateManagement
     /// </summary>
     public partial class EnlistmentsPage : Page
     {
-        private static readonly HashSet<string> directorySkipList = new HashSet<string>()
+        public EnlistmentsPage(EnlistmentsPageData data)
         {
-            "$RECYCLE.BIN",
-            "Actual Shub VM",
-            "blueboard",
-            "Enlistment Tracker",
-            "NP",
-            "services-tools",
-            "Shub shub shub",
-            "Shub VM",
-            "St. Helens Utilities",
-            "System Volume Information",
-            "Terminal",
-            "vscode",
-            "Watson-Tool",
-            "watson-tool-clean",
-            "wiki"
-        };
-
-        public EnlistmentsPage(string rootDirectory)
-        {
+            AppStateManager.AppState = AppState.Directed;
             var enlistments = new List<Enlistment>();
-            var directories = Directory.GetDirectories(rootDirectory);
+            var directories = Directory.GetDirectories(data.Directory);
             foreach (var directory in directories)
             {
                 var directoryStripped = DirectoryStripped(directory);
-                if (directorySkipList.Contains(directoryStripped))
+                if (!data.DirectoryIncludeList.Contains(directoryStripped))
                     continue;
 
                 using (var repo = new Repository(directory))
