@@ -4,6 +4,24 @@
              xmlns:local="clr-namespace:Enlistment_Tracker"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <Style x:Key="DarkBackground">
+                <Setter Property="Control.Background" Value="#222222"></Setter>
+            </Style>
+            <Style x:Key="ListItemText" TargetType="TextBlock">
+                <Setter Property="Foreground" Value="AntiqueWhite"></Setter>
+                <Setter Property="FontSize" Value="24 pt"></Setter>
+                <Setter Property="Padding" Value="10"></Setter>
+                <Setter Property="TextAlignment" Value="Center"></Setter>
+            </Style>
+            <Style x:Key="Header" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="28 pt"></Setter>
+                <Setter Property="Foreground" Value="AntiqueWhite"></Setter>
+            </Style>
+            <Style x:Key="Para" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="20 pt"></Setter>
+                <Setter Property="Foreground" Value="AntiqueWhite"></Setter>
+            </Style>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>
