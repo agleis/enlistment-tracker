@@ -59,10 +59,8 @@ namespace Enlistment_Tracker.StateManagement
             // Save
             using (var stream = _store.OpenFile("settings.cfg", FileMode.OpenOrCreate, FileAccess.Write))
             {
-                var dict = new Dictionary<string, Object>();
-                dict[key] = value;
                 _currentState[key] = value;
-                _formatter.Serialize(stream, dict);
+                _formatter.Serialize(stream, _currentState);
             }
         }
     }
