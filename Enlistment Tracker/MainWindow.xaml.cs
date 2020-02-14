@@ -19,6 +19,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LibGit2Sharp;
+using Enlistment_Tracker.StateManagement;
 
 namespace Enlistment_Tracker
 {
@@ -46,18 +47,9 @@ namespace Enlistment_Tracker
             "wiki"
         };
 
-        Dictionary<string, object> states = new Dictionary<string, object>();
-
         public MainWindow()
         {
-            BinaryFormatter formatter = new BinaryFormatter();
-            var store = IsolatedStorageFile.GetUserStoreForAssembly();
-
-            using (var stream = store.OpenFile("settings.cfg", FileMode.OpenOrCreate, FileAccess.Read))
-            {
-                if (stream.Length > 0)
-                    states = (Dictionary<string, object>)formatter.Deserialize(stream);
-            }
+            StateManager.Initialize();
             var enlistments = new List<Enlistment>();
             var directories = Directory.GetDirectories("C:\\Users\\amg295\\source\\repos");
             foreach (var directory in directories)
@@ -70,7 +62,7 @@ namespace Enlistment_Tracker
                 {
                     var checkedOutBranch = repo.Head;
                     var branchStripped = BranchStripped(checkedOutBranch.FriendlyName);
-                    var state = states.ContainsKey(directoryStripped) ? (State)states[directoryStripped] : State.Done;
+                    var state = StateManager.GetState<State?>(directoryStripped) ?? State.Done;
                     enlistments.Add(new Enlistment(directoryStripped, branchStripped, state));
                 }
             }
@@ -106,29 +98,13 @@ namespace Enlistment_Tracker
                 return;
 
             if (context.State == State.Done)
-            {
-                states[context.Name] = State.WIP;
                 context.State = State.WIP;
-            }
             else if (context.State == State.WIP)
-            {
-                states[context.Name] = State.InPR;
                 context.State = State.InPR;
-            }
             else if (context.State == State.InPR)
-            {
-                states[context.Name] = State.Done;
                 context.State = State.Done;
-            }
 
-            BinaryFormatter formatter = new BinaryFormatter();
-            var store = IsolatedStorageFile.GetUserStoreForAssembly();
-
-            // Save
-            using (var stream = store.OpenFile("settings.cfg", FileMode.OpenOrCreate, FileAccess.Write))
-            {
-                formatter.Serialize(stream, states);
-            }
+            StateManager.SetState(context.Name, context.State);
         }
     }
 

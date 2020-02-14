@@ -69,6 +69,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="RepoManagement\RepoManager.cs" />
+    <Compile Include="StateManagement\StateManager.cs" />
     <Compile Include="Converters\StateToColorConverter.cs" />
     <Compile Include="Converters\StateToStringConverter.cs" />
     <Compile Include="MainWindow.xaml.cs">
