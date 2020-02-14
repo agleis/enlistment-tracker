@@ -27,7 +27,7 @@ namespace Enlistment_Tracker.StateManagement
             }
         }
 
-        public static object GetState(string key)
+        protected static object GetState(string key)
         {
             if (!_currentState.TryGetValue(key, out object value))
             {
@@ -37,24 +37,21 @@ namespace Enlistment_Tracker.StateManagement
             return value;
         }
 
-        public static T GetState<T>(string key)
+        protected static T GetState<T>(string key)
         {
-            if (!_currentState.TryGetValue(key, out object value))
-            {
-                return default(T);
-            }
+            var value = GetState(key);
 
             try
             {
                 return (T)value;
             }
-            catch (InvalidCastException e)
+            catch (InvalidCastException)
             {
                 return default(T);
             }
         }
 
-        public static void SetState(string key, object value)
+        protected static void SetState(string key, object value)
         {
             // Save
             using (var stream = _store.OpenFile("settings.cfg", FileMode.OpenOrCreate, FileAccess.Write))

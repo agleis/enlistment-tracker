@@ -22,8 +22,6 @@ namespace Enlistment_Tracker.StateManagement
     /// </summary>
     public partial class WelcomePage : Page
     {
-        private Enlistment _enlistment;
-
         public WelcomePage()
         {
             InitializeComponent();
@@ -49,8 +47,8 @@ namespace Enlistment_Tracker.StateManagement
 
         private void WelcomeConfirm(object sender, RoutedEventArgs e)
         {
-            StateManager.SetState("isWelcomed", true);
-            StateManager.SetState("rootDirectory", FileName.Text);
+            AppStateManager.IsWelcomed = true;
+            AppStateManager.RootDirectory = FileName.Text;
             this.NavigationService.Navigate(new EnlistmentsPage(FileName.Text));
         }
     }

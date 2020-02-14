@@ -33,8 +33,8 @@ namespace Enlistment_Tracker
             StateManager.Initialize();
             InitializeComponent();
             Page page;
-            if (StateManager.GetState<bool>("isWelcomed"))
-                page = new EnlistmentsPage(StateManager.GetState<string>("rootDirectory"));
+            if (AppStateManager.IsWelcomed)
+                page = new EnlistmentsPage(AppStateManager.RootDirectory);
             else
                 page = new WelcomePage();
             mainFrame.Navigate(page);

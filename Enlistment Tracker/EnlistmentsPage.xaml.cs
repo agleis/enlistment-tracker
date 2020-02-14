@@ -55,7 +55,7 @@ namespace Enlistment_Tracker.StateManagement
                 {
                     var checkedOutBranch = repo.Head;
                     var branchStripped = BranchStripped(checkedOutBranch.FriendlyName);
-                    var state = StateManager.GetState<State?>(directoryStripped) ?? State.Done;
+                    var state = RepoStateManager.GetRepoState(directoryStripped) ?? State.Done;
                     enlistments.Add(new Enlistment(directoryStripped, branchStripped, state));
                 }
             }
@@ -98,7 +98,7 @@ namespace Enlistment_Tracker.StateManagement
             else if (context.State == State.InPR)
                 context.State = State.Done;
 
-            StateManager.SetState(context.Name, context.State);
+            RepoStateManager.SetRepoState(context.Name, context.State);
         }
     }
 }

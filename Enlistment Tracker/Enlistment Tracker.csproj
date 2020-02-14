@@ -65,6 +65,8 @@
     <Compile Include="EnlistmentsPage.xaml.cs">
       <DependentUpon>EnlistmentsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="StateManagement\AppStateManager.cs" />
+    <Compile Include="StateManagement\RepoStateManager.cs" />
     <Compile Include="WelcomePage.xaml.cs">
       <DependentUpon>WelcomePage.xaml</DependentUpon>
     </Compile>
