@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
@@ -53,10 +55,11 @@ namespace Enlistment_Tracker
 
             using (var stream = store.OpenFile("settings.cfg", FileMode.OpenOrCreate, FileAccess.Read))
             {
-                states = (Dictionary<string, object>)formatter.Deserialize(stream);
+                if (stream.Length > 0)
+                    states = (Dictionary<string, object>)formatter.Deserialize(stream);
             }
             var enlistments = new List<Enlistment>();
-            var directories = Directory.GetDirectories("D:\\");
+            var directories = Directory.GetDirectories("C:\\Users\\amg295\\source\\repos");
             foreach (var directory in directories)
             {
                 var directoryStripped = DirectoryStripped(directory);
@@ -77,8 +80,9 @@ namespace Enlistment_Tracker
 
         private string DirectoryStripped(string directory)
         {
-            if (directory.StartsWith("D:\\"))
-                return directory.Remove(0, 3);
+            var lastSlash = directory.LastIndexOf("\\");
+            if (lastSlash > -1)
+                return directory.Substring(lastSlash + 1);
 
             return directory;
         }
@@ -135,55 +139,63 @@ namespace Enlistment_Tracker
         Done
     }
 
-    public class ColorConverter : IValueConverter
+    public class Enlistment : INotifyPropertyChanged
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        private string _name;
+        private string _branch;
+        private State _state;
+        public string Name
         {
-            var state = value as State?;
-            if (!state.HasValue)
-                return Binding.DoNothing;
-
-            switch(state.Value)
+            get
             {
-                case State.Done:
-                    return Brushes.DodgerBlue;
-                case State.InPR:
-                    return Brushes.ForestGreen;
-                case State.WIP:
-                    return Brushes.Firebrick;
-                default:
-                    return Binding.DoNothing;
+                return _name;
+            }
+            set
+            {
+                _name = value;
+                OnPropertyChanged();
             }
         }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public string Branch
         {
-            var brush = value as Brush;
-            if (brush == null)
-                return Binding.DoNothing;
-
-            if (brush == Brushes.DodgerBlue)
-                return State.Done;
-            if (brush == Brushes.ForestGreen)
-                return State.InPR;
-            if (brush == Brushes.Firebrick)
-                return State.WIP;
-
-            return Binding.DoNothing;
+            get
+            {
+                return _branch;
+            }
+            set
+            {
+                _branch = value;
+                OnPropertyChanged();
+            }
         }
-    }
-
-    public class Enlistment
-    {
-        public string Name { get; set; }
-        public string Branch { get; set; }
-        public State State { get; set; }
+        public State State
+        {
+            get
+            {
+                return _state;
+            }
+            set
+            {
+                _state = value;
+                OnPropertyChanged();
+            }
+        }
 
         public Enlistment(string name, string branch, State state)
         {
             Name = name;
             Branch = branch;
             State = state;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
     }
 }
