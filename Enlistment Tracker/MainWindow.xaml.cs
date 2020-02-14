@@ -28,83 +28,16 @@ namespace Enlistment_Tracker
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static readonly HashSet<string> directorySkipList = new HashSet<string>()
-        {
-            "$RECYCLE.BIN",
-            "Actual Shub VM",
-            "blueboard",
-            "Enlistment Tracker",
-            "NP",
-            "services-tools",
-            "Shub shub shub",
-            "Shub VM",
-            "St. Helens Utilities",
-            "System Volume Information",
-            "Terminal",
-            "vscode",
-            "Watson-Tool",
-            "watson-tool-clean",
-            "wiki"
-        };
-
         public MainWindow()
         {
             StateManager.Initialize();
-            var enlistments = new List<Enlistment>();
-            var directories = Directory.GetDirectories("C:\\Users\\amg295\\source\\repos");
-            foreach (var directory in directories)
-            {
-                var directoryStripped = DirectoryStripped(directory);
-                if (directorySkipList.Contains(directoryStripped))
-                    continue;
-
-                using (var repo = new Repository(directory))
-                {
-                    var checkedOutBranch = repo.Head;
-                    var branchStripped = BranchStripped(checkedOutBranch.FriendlyName);
-                    var state = StateManager.GetState<State?>(directoryStripped) ?? State.Done;
-                    enlistments.Add(new Enlistment(directoryStripped, branchStripped, state));
-                }
-            }
             InitializeComponent();
-            DataContext = enlistments;
-        }
-
-        private string DirectoryStripped(string directory)
-        {
-            var lastSlash = directory.LastIndexOf("\\");
-            if (lastSlash > -1)
-                return directory.Substring(lastSlash + 1);
-
-            return directory;
-        }
-
-        private string BranchStripped(string branch)
-        {
-            if (branch.StartsWith("adgleisn/"))
-                return branch.Remove(0, 9);
-
-            return branch;
-        }
-
-        private void ListButtonClick(object sender, RoutedEventArgs e)
-        {
-            var button = sender as Button;
-            if (button == null)
-                return;
-
-            var context = button.DataContext as Enlistment;
-            if (context == null)
-                return;
-
-            if (context.State == State.Done)
-                context.State = State.WIP;
-            else if (context.State == State.WIP)
-                context.State = State.InPR;
-            else if (context.State == State.InPR)
-                context.State = State.Done;
-
-            StateManager.SetState(context.Name, context.State);
+            Page page;
+            if (StateManager.GetState<bool>("isWelcomed"))
+                page = new EnlistmentsPage(StateManager.GetState<string>("rootDirectory"));
+            else
+                page = new WelcomePage();
+            mainFrame.Navigate(page);
         }
     }
 
