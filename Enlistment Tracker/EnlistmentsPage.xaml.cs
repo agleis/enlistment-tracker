@@ -38,7 +38,7 @@ namespace Enlistment_Tracker.StateManagement
                     var checkedOutBranch = repo.Head;
                     var branchStripped = BranchStripped(checkedOutBranch.FriendlyName);
                     var state = RepoStateManager.GetRepoState(directoryStripped) ?? State.Done;
-                    enlistments.Add(new Enlistment(directoryStripped, branchStripped, state));
+                    enlistments.Add(new Enlistment(directory, directoryStripped, branchStripped, state));
                 }
             }
             InitializeComponent();
@@ -78,9 +78,25 @@ namespace Enlistment_Tracker.StateManagement
             else if (context.State == State.WIP)
                 context.State = State.InPR;
             else if (context.State == State.InPR)
+                context.State = State.Auto;
+            else if (context.State == State.Auto)
                 context.State = State.Done;
 
             RepoStateManager.SetRepoState(context.Name, context.State);
+        }
+
+        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            foreach (var item in e.AddedItems)
+            {
+                var enlistment = item as Enlistment;
+                using (var repo = new Repository(enlistment.Directory))
+                {
+                    var checkedOutBranch = repo.Head;
+                    var branchStripped = BranchStripped(checkedOutBranch.FriendlyName);
+                    enlistment.Branch = branchStripped;
+                }
+            }
         }
     }
 }

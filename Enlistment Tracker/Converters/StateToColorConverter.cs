@@ -23,6 +23,8 @@ namespace Enlistment_Tracker.Converters
                     return Brushes.DodgerBlue;
                 case State.InPR:
                     return Brushes.ForestGreen;
+                case State.Auto:
+                    return Brushes.DarkGreen;
                 case State.WIP:
                     return Brushes.Firebrick;
                 default:
@@ -40,6 +42,8 @@ namespace Enlistment_Tracker.Converters
                 return State.Done;
             if (brush == Brushes.ForestGreen)
                 return State.InPR;
+            if (brush == Brushes.DarkGreen)
+                return State.Auto;
             if (brush == Brushes.Firebrick)
                 return State.WIP;
 

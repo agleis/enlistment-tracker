@@ -32,7 +32,6 @@ namespace Enlistment_Tracker
         {
             StateManager.Initialize();
             InitializeComponent();
-            AppStateManager.AppState = AppState.Welcomed;
             Page page;
             switch (AppStateManager.AppState)
             {
@@ -67,6 +66,7 @@ namespace Enlistment_Tracker
     {
         WIP,
         InPR,
+        Auto,
         Done
     }
 
@@ -79,9 +79,22 @@ namespace Enlistment_Tracker
 
     public class Enlistment : INotifyPropertyChanged
     {
+        private string _directory;
         private string _name;
         private string _branch;
         private State _state;
+        public string Directory
+        {
+            get
+            {
+                return _directory;
+            }
+            set
+            {
+                _directory = value;
+                OnPropertyChanged();
+            }
+        }
         public string Name
         {
             get
@@ -119,8 +132,9 @@ namespace Enlistment_Tracker
             }
         }
 
-        public Enlistment(string name, string branch, State state)
+        public Enlistment(string directory, string name, string branch, State state)
         {
+            Directory = directory;
             Name = name;
             Branch = branch;
             State = state;

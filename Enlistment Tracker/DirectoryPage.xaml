@@ -22,13 +22,25 @@
             <RowDefinition Height="3*" />
             <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
-        <ListView ItemsSource="{Binding}" HorizontalAlignment="Stretch" Style="{StaticResource DarkBackground}" SelectionChanged="ListView_SelectionChanged">
+        <ListView ItemsSource="{Binding}" HorizontalAlignment="Stretch" Style="{StaticResource DarkBackground}" SelectionMode="Multiple" SelectionChanged="ListView_SelectionChanged">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 </Style>
             </ListView.ItemContainerStyle>
         </ListView>
-        <Button Grid.Row="1" Click="ButtonClick">Hello</Button>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+            <Button Grid.Row="1" Grid.Column="1" Height="100" Width="200" Click="ButtonClick">Continue</Button>
+        </Grid>
     </Grid>
 </Page>

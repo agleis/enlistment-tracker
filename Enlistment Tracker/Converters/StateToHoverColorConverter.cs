@@ -5,10 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using System.Windows.Media;
 
 namespace Enlistment_Tracker.Converters
 {
-    public class StateToStringConverter : IValueConverter
+    public class StateToHoverColorConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -19,13 +20,13 @@ namespace Enlistment_Tracker.Converters
             switch (state.Value)
             {
                 case State.Done:
-                    return "Done";
+                    return Brushes.DeepSkyBlue;
                 case State.InPR:
-                    return "In PR";
+                    return Brushes.OliveDrab;
                 case State.Auto:
-                    return "Auto";
+                    return Brushes.ForestGreen;
                 case State.WIP:
-                    return "WIP";
+                    return Brushes.Red;
                 default:
                     return Binding.DoNothing;
             }
@@ -33,17 +34,17 @@ namespace Enlistment_Tracker.Converters
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var str = value as string;
-            if (str == null)
+            var brush = value as Brush;
+            if (brush == null)
                 return Binding.DoNothing;
 
-            if (str == "Done")
+            if (brush == Brushes.DeepSkyBlue)
                 return State.Done;
-            if (str == "In PR")
+            if (brush == Brushes.OliveDrab)
                 return State.InPR;
-            if (str == "Auto")
+            if (brush == Brushes.ForestGreen)
                 return State.Auto;
-            if (str == "WIP")
+            if (brush == Brushes.Red)
                 return State.WIP;
 
             return Binding.DoNothing;

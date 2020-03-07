@@ -10,6 +10,7 @@
       Title="EnlistmentsPage">
     <Page.Resources>
         <converters:StateToColorConverter x:Key="StateToColorConverter"></converters:StateToColorConverter>
+        <converters:StateToHoverColorConverter x:Key="StateToHoverColorConverter"></converters:StateToHoverColorConverter>
         <converters:StateToStringConverter x:Key="StateToStringConverter"></converters:StateToStringConverter>
         <DataTemplate DataType="{x:Type local:Enlistment}">
             <Grid>
@@ -20,19 +21,38 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Style="{StaticResource ListItemText}" Text="{Binding Name}"></TextBlock>
                 <TextBlock Grid.Column="1" Style="{StaticResource ListItemText}" Text="{Binding Branch}"></TextBlock>
-                <Button Grid.Column="2" Padding="10" Name="button" Background="{Binding State, Converter={StaticResource StateToColorConverter}}" Click="ListButtonClick">
+                <Button Grid.Column="2" Padding="10" Name="button" Click="ListButtonClick">
+                    <Button.Style>
+                        <Style TargetType="{x:Type Button}">
+                            <Setter Property="Background" Value="{Binding State, Converter={StaticResource StateToColorConverter}}"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type Button}">
+                                        <Border Background="{TemplateBinding Background}">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="Button.IsMouseOver" Value="True">
+                                    <Setter Property="Button.Background" Value="{Binding State, Converter={StaticResource StateToHoverColorConverter}}" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
                     <TextBlock FontSize="24 pt" Foreground="White" Text="{Binding State, Converter={StaticResource StateToStringConverter}}"></TextBlock>
                 </Button>
             </Grid>
         </DataTemplate>
     </Page.Resources>
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{StaticResource DarkBackground}">
-        <ListView ItemsSource="{Binding}" HorizontalAlignment="Stretch" Style="{StaticResource DarkBackground}">
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
+        <ListBox ItemsSource="{Binding}" HorizontalAlignment="Stretch" Style="{StaticResource DarkBackground}" SelectionChanged="ListBox_SelectionChanged">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 </Style>
-            </ListView.ItemContainerStyle>
-        </ListView>
+            </ListBox.ItemContainerStyle>
+        </ListBox>
     </Grid>
 </Page>
