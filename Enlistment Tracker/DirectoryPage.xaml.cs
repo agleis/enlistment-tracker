@@ -1,12 +1,14 @@
 ﻿using Enlistment_Tracker.StateManagement;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Enlistment_Tracker
 {
@@ -16,6 +18,8 @@ namespace Enlistment_Tracker
     public partial class DirectoryPage : Page
     {
         private readonly DirectoryPageData data;
+
+        private List<string> DirectoryIncludeList;
 
         private List<DirectorySelection> context
         {
@@ -27,6 +31,7 @@ namespace Enlistment_Tracker
         {
             AppStateManager.AppState = AppState.Welcomed;
             InitializeComponent();
+            DirectoryIncludeList = new List<string>();
             var directories = Directory.GetDirectories(data.Directory);
             var directorySelectionList = new List<DirectorySelection>();
             foreach (var directory in directories)
@@ -34,7 +39,9 @@ namespace Enlistment_Tracker
                 var directorySelection = new DirectorySelection()
                 {
                     IsIncluded = false,
-                    Name = directory.StripDirectory()
+                    Name = directory.StripDirectory(),
+                    FullName = directory,
+                    Subdirectories = GetSubdirectories(directory)
                 };
                 directorySelectionList.Add(directorySelection);
             }
@@ -42,31 +49,63 @@ namespace Enlistment_Tracker
             this.data = data;
         }
 
+        private ObservableCollection<DirectorySelection> GetSubdirectories(string directory)
+        {
+            try
+            {
+                var subdirectories = Directory.GetDirectories(directory);
+                var subdirectoriesCollection = new ObservableCollection<DirectorySelection>();
+                foreach (var subdirectory in subdirectories)
+                {
+                    var directorySelection = new DirectorySelection()
+                    {
+                        IsIncluded = false,
+                        Name = subdirectory.StripDirectory(),
+                        FullName = subdirectory
+                    };
+                    subdirectoriesCollection.Add(directorySelection);
+                }
+                return subdirectoriesCollection;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
         private void ButtonClick(object sender, RoutedEventArgs e)
         {
             var data = new EnlistmentsPageData()
             {
                 Directory = this.data.Directory,
-                DirectoryIncludeList = context.Where(ds => ds.IsIncluded).Select(ds => ds.Name).ToList()
+                DirectoryIncludeList = DirectoryIncludeList
             };
             AppStateManager.DirectoryIncludeList = data.DirectoryIncludeList;
             this.NavigationService.Navigate(new EnlistmentsPage(data));
         }
 
-        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            foreach (var item in e.AddedItems)
+        private void treeViewItem_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
+            var tvi = (TreeViewItem)sender;
+            var directorySelection = tvi.DataContext as DirectorySelection;
+            if (directorySelection.IsIncluded)
             {
-                var directorySelection = item as DirectorySelection;
-                directorySelection.IsIncluded = true;
-                Console.WriteLine("Added" + directorySelection.Name);
-            }
-            foreach (var item in e.RemovedItems)
-            {
-                var directorySelection = item as DirectorySelection;
                 directorySelection.IsIncluded = false;
-                Console.WriteLine("Removed" + directorySelection.Name);
+                DirectoryIncludeList.Remove(directorySelection.FullName);
             }
+            else
+            {
+                directorySelection.IsIncluded = true;
+                DirectoryIncludeList.Add(directorySelection.FullName);
+            }
+            e.Handled = true;
+        }
+
+        private void TreeViewItem_Expanded(object sender, RoutedEventArgs e)
+        {
+            var tvi = (TreeViewItem)sender;
+            var directorySelection = tvi.DataContext as DirectorySelection;
+            foreach (var subdirectorySelection in directorySelection.Subdirectories)
+                subdirectorySelection.Subdirectories = GetSubdirectories(subdirectorySelection.FullName);
         }
     }
 
@@ -74,6 +113,8 @@ namespace Enlistment_Tracker
     {
         private bool _isIncluded;
         private string _name;
+        private string _fullName;
+        private ObservableCollection<DirectorySelection> _subdirectories;
 
         public bool IsIncluded
         {
@@ -91,6 +132,26 @@ namespace Enlistment_Tracker
             set
             {
                 _name = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string FullName
+        {
+            get => _fullName;
+            set
+            {
+                _fullName = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ObservableCollection<DirectorySelection> Subdirectories
+        {
+            get => _subdirectories;
+            set
+            {
+                _subdirectories = value;
                 OnPropertyChanged();
             }
         }

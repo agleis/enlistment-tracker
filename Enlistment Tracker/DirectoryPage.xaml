@@ -22,13 +22,6 @@
             <RowDefinition Height="3*" />
             <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
-        <ListView ItemsSource="{Binding}" HorizontalAlignment="Stretch" Style="{StaticResource DarkBackground}" SelectionMode="Multiple" SelectionChanged="ListView_SelectionChanged">
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                </Style>
-            </ListView.ItemContainerStyle>
-        </ListView>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*" />
@@ -42,5 +35,19 @@
             </Grid.RowDefinitions>
             <Button Grid.Row="1" Grid.Column="1" Height="100" Width="200" Click="ButtonClick">Continue</Button>
         </Grid>
+        <TreeView Name="trvMenu" ItemsSource="{Binding}" HorizontalAlignment="Stretch" Style="{StaticResource DarkBackground}">
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type local:DirectorySelection}" ItemsSource="{Binding Subdirectories}">
+                    <TextBlock Grid.Column="1" Style="{StaticResource ListItemText}" Background="{Binding IsIncluded, Converter={StaticResource IsIncludedToColorConverter}}" Text="{Binding Name}"></TextBlock>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="TreeViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <EventSetter Event="MouseLeftButtonUp" Handler="treeViewItem_MouseLeftButtonUp"/>
+                    <EventSetter Event="Expanded" Handler="TreeViewItem_Expanded"/>
+                </Style>
+            </TreeView.ItemContainerStyle>
+        </TreeView>
     </Grid>
 </Page>

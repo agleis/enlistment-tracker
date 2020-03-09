@@ -1,6 +1,9 @@
-﻿using LibGit2Sharp;
+﻿using Enlistment_Tracker.StateManagement;
+using LibGit2Sharp;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Enlistment_Tracker.StateManagement
+namespace Enlistment_Tracker
 {
     /// <summary>
     /// Interaction logic for WelcomePage.xaml
@@ -29,15 +32,17 @@ namespace Enlistment_Tracker.StateManagement
 
         private void FileButtonClick(object sender, RoutedEventArgs e)
         {
-            var folderDialog = new FolderBrowserDialog();
-            var result = folderDialog.ShowDialog();
+            var folderPicker = new CommonOpenFileDialog();
+            folderPicker.Title = "Select closest common ancestor of enlistments.";
+            folderPicker.IsFolderPicker = true;
+            var result = folderPicker.ShowDialog();
             switch (result)
             {
-                case System.Windows.Forms.DialogResult.OK:
-                    FileName.Text = folderDialog.SelectedPath;
-                    FileName.ToolTip = folderDialog.SelectedPath;
+                case CommonFileDialogResult.Ok:
+                    FileName.Text = folderPicker.FileName;
+                    FileName.ToolTip = folderPicker.FileName;
                     break;
-                case System.Windows.Forms.DialogResult.Cancel:
+                case CommonFileDialogResult.Cancel:
                 default:
                     FileName.Text = null;
                     FileName.ToolTip = null;
